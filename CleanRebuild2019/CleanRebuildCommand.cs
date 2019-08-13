@@ -83,19 +83,19 @@ namespace CleanRebuild2019
             OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Instance = new CleanRebuildCommand(package, commandService);
             Instance._dte = await Instance.GetServiceByTypeAsync<DTE>();
-            Instance._dte.Events.SolutionEvents.Opened += Instance.SolutionOpenendEventHandler;
-            Instance._dte.Events.SolutionEvents.BeforeClosing += Instance.SolutionClosingEventHandler;
+            //Instance._dte.Events.SolutionEvents.Opened += Instance.SolutionOpenendEventHandler;
+            //Instance._dte.Events.SolutionEvents.BeforeClosing += Instance.SolutionClosingEventHandler;
         }
 
 
-        private void SolutionOpenendEventHandler()
-        {
-            _command.Enabled = true;
-        }
-        private void SolutionClosingEventHandler()
-        {
-            _command.Enabled = false;
-        }
+        //private void SolutionOpenendEventHandler()
+        //{
+        //    _command.Enabled = true;
+        //}
+        //private void SolutionClosingEventHandler()
+        //{
+        //    _command.Enabled = false;
+        //}
 
 
 
@@ -110,11 +110,13 @@ namespace CleanRebuild2019
         private async void Execute(object sender, EventArgs e)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
+            _command.Enabled = false;
             if (_dte.Solution != null && _dte.Solution.Count > 0)
             {
                 _dte.Solution.SolutionBuild.Clean(true);
                 _dte.Solution.SolutionBuild.Build();
             }
+            _command.Enabled = true;
         }
 
 
